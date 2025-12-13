@@ -5,8 +5,15 @@
   Once you've implemented the logic, test your code by running
 */
 
-function countVowels(str) {
-    // Your code here
+function countVowels(str = "") {
+  count = 0;
+  str = str.toLowerCase();
+  for (let index = 0; index < str.length; index++) {
+    if (/[aeiou]/.test(str[index])) {
+      count++;
+    }
+  }
+  return count;
 }
 
 module.exports = countVowels;
