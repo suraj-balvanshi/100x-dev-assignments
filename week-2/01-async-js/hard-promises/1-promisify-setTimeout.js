@@ -4,6 +4,7 @@
 
 function wait(n) {
   return new Promise((res, rej) => {
+    // go to queue and wait for timer to complete and then executes
     setTimeout(() => {
       res();
     }, n * 1000);

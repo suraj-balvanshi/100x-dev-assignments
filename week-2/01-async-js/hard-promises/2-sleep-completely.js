@@ -4,7 +4,23 @@
  * the function should return a promise just like before
  */
 
+// function sleep(milliseconds) {
+//   return new Promise((res, rej) => {
+//     const start = Date.now();
+
+//     while (Date.now() - start < milliseconds) {
+//       // busy wait (blocks thread)
+//       // keeps the event loop stuck here
+//     }
+//     res();
+//   });
+// }
+
 function sleep(milliseconds) {
+  return new Promise((res, rej) => {
+    for (let start = Date.now(); Date.now() - start < milliseconds; ) {}
+    res();
+  });
 }
 
 module.exports = sleep;
