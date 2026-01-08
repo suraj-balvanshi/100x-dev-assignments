@@ -39,11 +39,76 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
-  
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+
+const fs = require("fs");
+const { title } = require("process");
+const { randomUUID } = require("crypto");
+let todos = [];
+
+app.use(bodyParser.json());
+
+app.get("/todos", (req, res) => {
+  res.status(200).send(JSON.stringify(todos));
+});
+
+app.get("/todos/:id", (req, res) => {
+  const params = req.params;
+  const id = params.id;
+  let todo = todos.find((todo) => todo.id === id);
+  if (todo) {
+    res.status(200).send(JSON.stringify(todo));
+  } else {
+    res.status(404).send("Todo not found");
+  }
+});
+
+app.post("/todos", (req, res) => {
+  const body = req.body;
+  if (typeof body.title === "string" && typeof body.description === "string") {
+    let todo = {
+      id: randomUUID(),
+      title: body.title,
+      description: body.description,
+    };
+    todos.push(todo);
+    console.log(todos);
+    res.status(201).send(JSON.stringify({ id: todo.id }));
+  } else {
+    res.status(400).send("Bad Request Data, title, description");
+  }
+});
+
+app.put("/todos/:id", (req, res) => {
+  const id = req.params.id;
+  const body = req.body;
+
+  const todoIndex = todos.findIndex((todo) => todo.id == id);
+
+  if (
+    typeof body.title === "string" &&
+    typeof body.description === "string" &&
+    todoIndex != -1
+  ) {
+    todos[todoIndex].title = body.title;
+    todos[todoIndex].description = body.description;
+    res.status(200).send(`todo updated at id: ${id}`);
+  } else {
+    res.status(400).send("Bad Request Data, title, description, id");
+  }
+});
+
+app.delete("/todos/:id", (req, res) => {
+  const id = req.params.id;
+  const todoIndex = todos.findIndex((todo) => todo.id == id);
+  if (todoIndex != -1) {
+    todos.splice(todoIndex, 1);
+    res.status(200).send(`todo deleted with id: ${id}`);
+  } else {
+    res.status(400).send("Bad Request Data, id");
+  }
+});
+
+module.exports = app;
